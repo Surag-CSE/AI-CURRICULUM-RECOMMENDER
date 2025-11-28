@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard | SmartLearnAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition duration-300">
+
+  <!-- Navbar -->
+  <header class="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 shadow-md z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div class="text-xl font-bold text-blue-600 dark:text-blue-400">SmartLearnAI</div>
+      <nav class="flex items-center space-x-6">
+        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Welcome, <strong>User123</strong></span>
+        <button class="text-sm px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Log Out</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Dashboard -->
+  <section class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold mb-8 text-center">Your Learning Dashboard</h1>
+
+    <!-- Dynamic Topics -->
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-2 text-blue-700 dark:text-blue-400">Previously Explored</h2>
+        <p class="text-lg">✔️ <strong id="prev-topic">Loading...</strong></p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" id="prev-date"></p>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-2 text-blue-700 dark:text-blue-400">Next Recommended Topic</h2>
+        <p class="text-lg">➡️ <strong id="next-topic">Loading...</strong></p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" id="next-time"></p>
+        <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Start Learning</button>
+      </div>
+    </div>
+
+    <!-- Course Progress -->
+    <div class="mt-12 text-center">
+      <button onclick="toggleCourseProgress()" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">📘 View Course Progress</button>
+    </div>
+
+    <div id="courseProgress" class="hidden mt-6 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+      <h2 class="text-xl font-semibold mb-4 text-blue-700 dark:text-blue-400">📘 Course Modules</h2>
+      <ul id="moduleList" class="space-y-3 text-sm"></ul>
+    </div>
+
+    <!-- XP + Badges -->
+    <div class="mt-12 grid md:grid-cols-2 gap-8">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+        <h2 class="text-xl font-semibold text-blue-700 dark:text-blue-400 mb-2">Your XP Progress</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-300 mb-2" id="levelText"></p>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+          <div id="xpBar" class="bg-blue-600 h-4 rounded-full" style="width: 0%;"></div>
+        </div>
+        <p class="text-sm mt-2 text-right text-gray-500 dark:text-gray-300" id="xpText">Loading...</p>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+        <h2 class="text-xl font-semibold text-blue-700 dark:text-blue-400 mb-4">Badges Earned</h2>
+        <div id="badges" class="flex flex-wrap gap-4"></div>
+      </div>
+    </div>
+
+    <!-- Streak + Motivation -->
+    <div class="mt-12 grid md:grid-cols-2 gap-8">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md text-center">
+        <h2 class="text-xl font-semibold text-blue-700 dark:text-blue-400 mb-2">🔥 Daily Streak</h2>
+        <p class="text-4xl font-bold text-orange-500" id="streak">0 Days</p>
+        <p class="text-sm text-gray-500 dark:text-gray-300">Keep going! +10 XP if you learn today</p>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+        <h2 class="text-xl font-semibold text-blue-700 dark:text-blue-400 mb-2">💡 AI Motivation</h2>
+        <p class="italic" id="motivation">"Loading quote..."</p>
+      </div>
+    </div>
+<!-- Game Mode Selector -->
+<div class="mt-12 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+  <h2 class="text-xl font-semibold text-blue-700 dark:text-blue-400 mb-4">🎮 Select Your Game Mode</h2>
+  <div id="gameModes" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"></div>
+  <p class="text-sm text-gray-500 dark:text-gray-400 mt-4" id="selectedModeNote"></p>
+</div>
+
+  </section>
+
+
+  <!-- Footer -->
+  <footer class="bg-gray-100 dark:bg-gray-800 text-center p-4 text-sm mt-10">
+    <p class="text-gray-600 dark:text-gray-300">© 2025 SmartLearnAI. All rights reserved.</p>
+  </footer>
+
+  <!-- Script -->
+  <script>
+    function toggleCourseProgress() {
+      document.getElementById('courseProgress').classList.toggle('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load Topic Info
+      document.getElementById("prev-topic").textContent = localStorage.getItem("previousTopic") || "N/A";
+      document.getElementById("prev-date").textContent = "Completed on: " + (localStorage.getItem("previousTopicDate") || "N/A");
+      document.getElementById("next-topic").textContent = localStorage.getItem("nextTopic") || "N/A";
+      document.getElementById("next-time").textContent = "Estimated Time: " + (localStorage.getItem("nextTopicTime") || "N/A");
+
+      // XP + Level
+      const xp = parseInt(localStorage.getItem("xp") || "0");
+      const level = parseInt(localStorage.getItem("level") || "1");
+      const xpNeeded = 1000;
+      const percent = Math.min(100, (xp / xpNeeded) * 100);
+      document.getElementById("levelText").textContent = `Level ${level}`;
+      document.getElementById("xpBar").style.width = `${percent}%`;
+      document.getElementById("xpText").textContent = `${xp} / ${xpNeeded} XP`;
+
+      // Streak
+      const streak = localStorage.getItem("streak") || "0";
+      document.getElementById("streak").textContent = `${streak} Days`;
+
+      // Motivation
+      document.getElementById("motivation").textContent = localStorage.getItem("motivation") || `"Stay consistent. Success builds over time."`;
+
+      // Badges
+      const badgeList = JSON.parse(localStorage.getItem("badges") || "[]");
+      const badgeContainer = document.getElementById("badges");
+      if (badgeList.length === 0) {
+        badgeContainer.innerHTML = "<p class='text-gray-500'>No badges earned yet.</p>";
+      } else {
+        badgeList.forEach(badge => {
+          const badgeEl = document.createElement("div");
+          badgeEl.className = "text-center";
+          badgeEl.innerHTML = `
+            <img src="${badge.icon}" class="mx-auto w-12 h-12" />
+            <p class="text-xs mt-1">${badge.title}</p>
+          `;
+          badgeContainer.appendChild(badgeEl);
+        });
+      }
+
+      // Modules
+      const moduleList = JSON.parse(localStorage.getItem("modules") || "[]");
+      const list = document.getElementById("moduleList");
+      if (moduleList.length === 0) {
+        list.innerHTML = "<li class='text-gray-500'>No modules loaded yet.</li>";
+      } else {
+        moduleList.forEach(module => {
+          const li = document.createElement("li");
+          let icon = "⏳", color = "text-gray-400";
+          if (module.status === "done") { icon = "✅"; color = "text-green-500"; }
+          else if (module.status === "current") { icon = "📘"; color = "text-blue-500"; }
+          li.innerHTML = `<span class="${color} font-medium">${icon} ${module.title}</span>`;
+          list.appendChild(li);
+        });
+      }
+    });
+	// Game Modes
+const availableModes = [
+  { id: "xp", icon: "🎯", name: "XP Boost", desc: "Earn double XP for next 30 minutes" },
+  { id: "time", icon: "🕒", name: "Time Attack", desc: "Beat the clock for bonus XP" },
+  { id: "focus", icon: "💡", name: "Focus Mode", desc: "Minimal UI for deep learning" },
+  { id: "challenge", icon: "🧩", name: "Challenge Mode", desc: "Hard quizzes = high rewards" },
+];
+
+const selectedMode = localStorage.getItem("gameMode");
+const modeContainer = document.getElementById("gameModes");
+const modeNote = document.getElementById("selectedModeNote");
+
+availableModes.forEach(mode => {
+  const div = document.createElement("div");
+  const isActive = selectedMode === mode.id;
+  div.className = `p-4 rounded-lg border transition cursor-pointer ${isActive ? 'border-blue-600 bg-blue-50 dark:bg-blue-900' : 'border-gray-300 dark:border-gray-700 hover:border-blue-400'}`;
+  div.innerHTML = `
+    <div class="text-2xl mb-2">${mode.icon}</div>
+    <div class="font-bold">${mode.name}</div>
+    <p class="text-sm text-gray-600 dark:text-gray-300">${mode.desc}</p>
+  `;
+  div.addEventListener("click", () => {
+    localStorage.setItem("gameMode", mode.id);
+    location.reload(); // or call a re-render function
+  });
+  modeContainer.appendChild(div);
+});
+
+// Set description below mode cards
+if (selectedMode) {
+  const mode = availableModes.find(m => m.id === selectedMode);
+  if (mode) {
+    modeNote.innerHTML = `✅ <strong>${mode.name}</strong> mode activated.`;
+  }
+}
+
+  </script>
+
+</body>
+</html>

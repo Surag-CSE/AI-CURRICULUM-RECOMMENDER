@@ -1,0 +1,13 @@
+In the curriculum page, Clicking on the short button, must display only the content under "Short Duration path" from the response. Similarly, clicking on "Moderate" or "Long" buttons, must only display the content under "Moderate Duration path" and "Long Duration path" respectively. The relevant contents must be displayed in a div id="curriculumRoadmap" as follows: 
+
+
+
+ 1. The name "Short Duration path", "Moderate Duration path" or "Long Duration path" will not be displayed within this div. It is already evident through the button which is clicked by the user. 
+
+ 2. Each phase (along with the phase number and value, which includes the name of the phase and number of weeks) will be a drop-down. Clicking on the drop-down reveals the relevant steps within each phase. 
+
+ 3. Within each phase, Each step has to be in different sections. These sections will have a common background color and a side-strip. Also, for each step, step number and value: name of step along with weeks, will be provided through the parsed message from the backend. 
+
+ 4. Within each step, Course Link, Duration in weeks, and description will be present. The course link must be markdown translated so that it is a clickable link on my html page and it redirects to the required site (as per GEMINI's response) on the internet. 
+
+ 5. All these elements must be compatible with the dark mode theme.

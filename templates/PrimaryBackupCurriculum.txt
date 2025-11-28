@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Curriculum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .duration-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .dark .duration-btn.active {
+            background-color: #3b82f6;
+        }
+        
+
+        /* Styles for the capsule phase buttons */
+        .phase-button.active {
+            background-color: #22C55E; /* Green color */
+            color: white;
+        }
+        .dark .phase-button.active {
+            background-color: #22C55E;
+            color: white;
+        }
+        
+
+
+        /* Add these new styles for the slider */
+        #sliderThumb {
+            /* This calculation ensures the thumb is centered on the line */
+            transform: translateY(-50%) translateX(-50%);
+            transition: left 0.2s ease;
+        }
+        .slider-label {
+            transition: color 0.2s ease;
+        }
+        .slider-label.active {
+            color: #3b82f6; /* Tailwind's blue-500 */
+            font-weight: 700;
+        }
+        .dark .slider-label.active {
+            color: #60a5fa; /* A slightly lighter blue for dark mode */
+        }
+
+
+        
+        /* Add these new styles for the progress tracking feature */
+        .step-container {
+            position: relative;
+            overflow: hidden; /* Important for the fill animation */
+        }
+        
+        .upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #22C55E; /* Green color for the fill */
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            z-index: 1;
+        }
+        
+        .step-container.upload-view-active .upload-overlay {
+            transform: scaleX(1);
+	    
+        }
+        
+        .step-container .step-header,
+        .step-container .step-content-normal,
+        .step-container .step-content-upload {
+            position: relative;
+            z-index: 2;/* Ensures content is above the overlay */
+        }
+        
+        .step-container.upload-view-active .step-header,
+        .step-container.upload-view-active .step-header h4,
+        .step-container.upload-view-active .step-header svg {
+            color: white !important;
+        }
+        
+        .dropbox {
+            border: 2px dashed #9ca3af;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        
+        .dropbox.dragover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: #60a5fa;
+        }
+        
+        .dropbox .hover-links {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .dropbox.has-file:hover .hover-links {
+            opacity: 1;
+        }
+
+
+	.dropbox.has-file .dropbox-prompt {
+   	    display: none;
+	}
+	.dropbox.has-file {
+    	    background-size: cover;
+    	    background-position: center;
+    	    border-style: solid; 
+}
+        
+
+    </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans">
+
+    <!--NavBar-->
+    <header class="fixed top-0 left-0 w-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-md z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="text-xl font-bold text-blue-600 dark:text-blue-400">SmartLearnAI</div>
+            <div class="flex items-center space-x-4">
+                <button class="focus:outline-none relative text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"><i data-feather="bell"></i><span class="absolute top-0 right-0 inline-block w-2 h-2 bg-red-600 rounded-full"></span></button>
+                <div class="relative">
+                    <button id="profileDropdownBtn" class="focus:outline-none rounded-full w-10 h-10 bg-slate-200 dark:bg-slate-700 flex items-center justify-center"><i data-feather="user" class="text-slate-500 dark:text-slate-400"></i></button>
+                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-slate-800 rounded-md shadow-lg z-50">
+                        <a href="#" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">My Profile</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">Billing</a>
+                        <a href="/logout" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">Logout</a>
+                    </div>
+                </div>
+                <button id="toggleMode" onclick="document.documentElement.classList.toggle('dark')" class="ml-2 focus:outline-none text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"><i data-feather="moon"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <!-- Left Section (60%) -->
+            <div class="w-full lg:w-[60%]">
+                <a href="{{ url_for('dashboard_page') }}" class="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline mb-4 font-semibold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Dashboard
+                </a>
+                
+                <div id="mainContents" class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+                    <h1 id="curriculumTitle" class="text-3xl lg:text-4xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-400">Loading Curriculum...</h1>
+                    
+                    <!--Slider for Duration Selection -->
+                    <div id="durationSelector" class="mb-9">
+                        <h2 class="text-lg font-semibold mb-4 dark:text-slate-200">Select Your Duration</h2>
+          
+                        <div class="relative w-full max-w-[200px] pt-2">
+                            <!-- Slider Track -->
+                            <div class="relative h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full">
+                                <!-- Slider Thumb -->
+                                <div id="sliderThumb" class="absolute top-1/2 w-3.5 h-3.5 bg-blue-500 rounded-full shadow-lg cursor-pointer" style="left: 0%;"></div>
+                            </div>
+                            <!-- Labels -->
+                            <div class="flex justify-between mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+                                <span id="label-short" class="slider-label cursor-pointer">Short</span>
+                                <span id="label-moderate" class="slider-label cursor-pointer">Moderate</span>
+                                <span id="label-long" class="slider-label cursor-pointer">Long</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <div id="curriculumRoadmap" class="space-y-4">
+                        <!-- Dynamic curriculum steps will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Section (40%) -->
+            <div class="w-full lg:w-[40%] space-y-6">
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4">Learning Hours</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Logged 12 hours this week</p>
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-4"><div class="bg-gradient-to-r from-green-400 to-teal-500 h-4 rounded-full" style="width: 60%"></div></div>
+                </div>
+                
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4">XP Earned</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span class="font-medium">Daily Streak</span><span>150 / 200 XP</span></div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5"><div class="bg-gradient-to-r from-blue-500 to-cyan-400 h-2.5 rounded-full" style="width: 75%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span class="font-medium">Step 1 Completion</span><span>100 / 100 XP</span></div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5"><div class="bg-gradient-to-r from-blue-500 to-cyan-400 h-2.5 rounded-full" style="width: 100%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1"><span class="font-medium">Missed Bonus</span><span class="text-red-500">0 / 50 XP</span></div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5"><div class="bg-red-400 h-2.5 rounded-full" style="width: 0%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold mb-4">Badges Earned</h2>
+                    <div class="flex items-center gap-6">
+                        <div class="text-center">
+                            <div class="w-24 h-24 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                                 <div class="glowing-badge-icon w-16 h-16"></div>
+                            </div>
+                            <p class="text-sm mt-2 font-medium">Next: Code Starter</p>
+                        </div>
+                        <div class="flex-1 grid grid-cols-3 gap-4">
+                            <svg class="w-12 h-12 text-slate-300 dark:text-slate-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22.75L3.25 17.25V6.75L12 1.25l8.75 5.5v10.5L12 22.75zm0-1.5l7.25-4.56V8.19L12 3.63 4.75 8.19v8.62l7.25 4.56z"></path></svg>
+                            <svg class="w-12 h-12 text-slate-300 dark:text-slate-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22.75L3.25 17.25V6.75L12 1.25l8.75 5.5v10.5L12 22.75zm0-1.5l7.25-4.56V8.19L12 3.63 4.75 8.19v8.62l7.25 4.56z"></path></svg>
+                            <svg class="w-12 h-12 text-slate-300 dark:text-slate-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22.75L3.25 17.25V6.75L12 1.25l8.75 5.5v10.5L12 22.75zm0-1.5l7.25-4.56V8.19L12 3.63 4.75 8.19v8.62l7.25 4.56z"></path></svg>
+                            <svg class="w-12 h-12 text-slate-300 dark:text-slate-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22.75L3.25 17.25V6.75L12 1.25l8.75 5.5v10.5L12 22.75zm0-1.5l7.25-4.56V8.19L12 3.63 4.75 8.19v8.62l7.25 4.56z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- Navbar and Theme Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+            document.getElementById('profileDropdownBtn').addEventListener('click', () => {
+                document.getElementById('profileDropdown').classList.toggle('hidden');
+            });
+            // This ensures the page theme matches the rest of the site
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+
+    // --- Curriculum Page Logic (New Phase Design with Slider) ---
+document.addEventListener('DOMContentLoaded', () => {
+    const curriculumTitle = document.getElementById('curriculumTitle');
+    const curriculumRoadmap = document.getElementById('curriculumRoadmap');
+    const curriculumData = {{ curriculum_data | tojson }};
+
+    // --- Slider Elements ---
+    const sliderThumb = document.getElementById('sliderThumb');
+    const sliderContainer = sliderThumb.parentElement;
+    const labels = {
+        short: document.getElementById('label-short'),
+        moderate: document.getElementById('label-moderate'),
+        long: document.getElementById('label-long'),
+    };
+    const pathKeys = ["Short Duration Path", "Moderate Duration Path", "Long Duration Path"];
+    let isDragging = false;
+
+    // --- Core Rendering Function (remains the same) ---
+const renderCurriculum = (pathKey) => {
+    curriculumRoadmap.innerHTML = '';
+    const pathData = curriculumData[pathKey];
+
+    if (!pathData || pathData.length === 0) {
+        curriculumRoadmap.innerHTML = `<p class="text-slate-500 dark:text-slate-400">No curriculum available for this duration.</p>`;
+        return;
+    }
+
+    let roadmapHtml = pathData.map((phase, index) => {
+        const [phaseLabel, ...phaseTitleParts] = phase.Phase.split(/:\s*/);
+        const phaseTitle = phaseTitleParts.join(': ');
+        const isLastPhase = index === pathData.length - 1;
+
+        let stepsHtml = phase.Steps.map(step => {
+            const courses = Array.isArray(step.Courses) ? step.Courses : [step];
+            let coursesHtml = courses.map(course => {
+                const altLinkHtml = course['Alternative Free Link'] 
+                    ? `<a href="${course['Alternative Free Link']}" target="_blank" class="inline-flex items-center gap-1 text-green-500 hover:underline font-semibold">Free Alternative <i data-feather="arrow-right" class="w-4 h-4"></i></a>` : '';
+                return `
+                    <div class="mt-3 pl-4 text-sm space-y-2 border-l-2 border-slate-200 dark:border-slate-600">
+                        <p><strong><span><i data-feather="shopping-bag" class="w-4 h-4 inline-block -mt-2"></i> Course by: ${course.Provider || 'N/A'}</span></strong></p>
+                        <p><strong>Duration:</strong> ${course.Duration} weeks</p>
+                        <p class="leading-relaxed"><strong>Description:</strong> ${course.Description.replace(/\n/g, '<br>')}</p>
+                        <div class="flex items-center gap-4 text-xs font-medium text-slate-500 dark:text-slate-400 mt-2">
+                            <span><i data-feather="clock" class="w-4 h-4 inline-block -mt-1"></i> Pace: ${course['Learning Pace']}</span>
+                            <span><i data-feather="star" class="w-4 h-4 inline-block -mt-1"></i> XP: ${course.XPs}</span>
+                            <span><i data-feather="award" class="w-4 h-4 inline-block -mt-1"></i> Badge: ${course.Badges}</span>
+                        </div>
+                        <div class="flex gap-4 mt-8">
+                            <a href="${course['Course Link']}" target="_blank" class="inline-flex items-center gap-1 text-blue-500 hover:underline font-semibold">Go to Course <i data-feather="arrow-right" class="w-4 h-4"></i></a>
+                            ${altLinkHtml}
+                        </div>
+                    </div>`;
+            }).join('<hr class="my-3 border-slate-200 dark:border-slate-700">');
+
+            // This is the new, more complex structure that wraps your step content
+            return `
+                <div class="step-container bg-slate-50 dark:bg-slate-900/50 border-l-4 border-green-500 p-4 rounded-r-lg">
+                    <div class="upload-overlay"></div>
+                    
+                    <!-- Top Right Buttons -->
+                    <div class="absolute top-2 right-2 z-10 flex flex-col items-end gap-2">
+                        <button class="mark-complete-btn p-1.5 bg-white/50 dark:bg-slate-800/50 rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 transition">
+                            <i data-feather="thumbs-up" class="w-5 h-5 text-green-600 dark:text-white"></i>
+                        </button>
+                        <button class="upload-btn hidden px-3 py-1.5 border border-slate-50 dark:border-0 bg-green-500 text-white text-xs font-semibold rounded-full hover:bg-green-600 transition">
+                            Upload
+                        </button>
+                    </div>
+
+                    <!-- Header (Always Visible) -->
+                    <div class="step-header">
+                        <h4 class="font-semibold text-lg flex items-center gap-3"><i data-feather="book-open" class="w-5 h-5 text-green-500"></i><span>${step.Step}</span></h4>
+                    </div>
+
+                    <!-- Normal Content (Toggles Visibility) -->
+                    <div class="step-content-normal space-y-2 mt-2">
+                        ${coursesHtml}
+                    </div>
+
+                    <!-- Upload Content (Toggles Visibility) -->
+                    <div class="step-content-upload hidden mt-4 flex gap-4">
+                        <div class="dropbox w-[40%] h-48 flex flex-col items-center justify-center rounded-lg bg-black/10 dark:bg-white/5 relative">
+                            <input type="file" class="hidden file-input" accept="image/jpeg, image/png">
+                            <div class="dropbox-prompt text-center text-white">
+                                <i data-feather="upload-cloud" class="w-10 h-10 mx-auto"></i>
+                                <p class="mt-2 text-sm font-semibold">Drag & Drop or Click</p>
+                                <p class="text-xs">PNG or JPG</p>
+                            </div>
+                            <div class="absolute inset-0 flex items-center justify-center gap-4 bg-black/50 hover-links">
+                                <a href="#" target="_blank" class="view-link inline-flex items-center gap-1 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-full">View</a>
+                                <button class="reupload-link inline-flex items-center gap-1 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-full">Re-upload</button>
+                            </div>
+                        </div>
+
+			<div class="flex-1 text-white ">
+			    <h5 class="font-bold mb-1">Proof of Completion</h5>
+			    <p class="text-xs flex items-center gap-2 mb-3">* Upload a Certificate or even a Screen-Shot of completion</p>
+			    <p class="text-sm flex items-center gap-2 mb-3"><i data-feather="star" class="w-4 h-4"></i> <b>XP:</b> ${step.XPs}</p>
+			    <p class="text-sm flex items-center gap-2 mb-3"><i data-feather="award" class="w-4 h-4"></i><b> Badge:</b> ${step.Badges}</p>
+			    <p class="text-sm flex items-center gap-2 mb-3"><i data-feather="clock" class="w-4 h-4"></i> <b>Time Taken:</b> --</p>
+			    <p class="text-sm flex items-center gap-2 mb-3"><i data-feather="shopping-bag" class="w-4 h-4"></i><b> Course Provider:</b>${step.Provider.split('-')[0]}</p>
+			</div>
+
+                    </div>
+                    <!-- Bottom Right Buttons -->
+                    <div class="absolute bottom-2 right-2 z-10 flex flex-col items-end gap-2">
+                        <!-- Back To Course Details Button -->
+			<button class="back-to-details-btn hidden mt-4 inline-flex items-center gap-2 text-white font-semibold text-xs px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-full transition">
+				<i data-feather="arrow-left" class="w-4 h-4"></i>
+				Back to Details
+			</button> 
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        return `
+            <div class="phase-container mb-4">
+                <div class="flex items-center">
+                    <button class="phase-button flex-shrink-0 px-4 h-10 rounded-full border-slate-400 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold text-sm flex items-center justify-center transition-all duration-300" data-phase-index="${index}">${phaseLabel}</button>
+                    <h3 class="font-bold text-lg text-slate-700 dark:text-slate-200 ml-4">${phaseTitle}</h3>
+                </div>
+                <div class="phase-content hidden mt-4 space-y-4">${stepsHtml}</div>
+            </div>`;
+    }).join('');
+
+    curriculumRoadmap.innerHTML = roadmapHtml;
+    feather.replace();
+};
+
+    
+    // --- New Slider Functions ---
+    function updateSliderUI(position, animate = false) {
+        let percent = Math.max(0, Math.min(100, position));
+        sliderThumb.style.transition = animate ? 'left 0.2s ease' : 'none';
+        sliderThumb.style.left = `${percent}%`;
+
+        Object.values(labels).forEach(label => label.classList.remove('active'));
+        if (percent < 25) labels.short.classList.add('active');
+        else if (percent > 75) labels.long.classList.add('active');
+        else labels.moderate.classList.add('active');
+    }
+
+    function snapSliderAndRender() {
+        const currentPos = parseFloat(sliderThumb.style.left);
+        let snapPos = 0;
+        let pathKey = pathKeys[0];
+
+        if (currentPos > 75) {
+            snapPos = 100;
+            pathKey = pathKeys[2];
+        } else if (currentPos > 25) {
+            snapPos = 50;
+            pathKey = pathKeys[1];
+        }
+        
+        updateSliderUI(snapPos, true);
+        renderCurriculum(pathKey);
+    }
+
+    sliderThumb.addEventListener('mousedown', () => { isDragging = true; });
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            snapSliderAndRender();
+        }
+    });
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const rect = sliderContainer.getBoundingClientRect();
+        let newX = e.clientX - rect.left;
+        let percent = (newX / rect.width) * 100;
+        updateSliderUI(percent);
+    });
+    
+
+    // Allow clicking on labels to move the slider
+    Object.entries(labels).forEach(([key, label], index) => {
+        label.addEventListener('click', () => {
+            const snapPos = index * 50;
+            updateSliderUI(snapPos, true);
+            renderCurriculum(pathKeys[index]);
+        });
+    });
+    
+// --- curriculumRoadmap event listener ---
+curriculumRoadmap.addEventListener('click', (e) => {
+    const button = e.target.closest('.phase-button');
+    const completeBtn = e.target.closest('.mark-complete-btn');
+    const uploadBtn = e.target.closest('.upload-btn');
+    const dropbox = e.target.closest('.dropbox');
+    const reuploadLink = e.target.closest('.reupload-link');
+    const backBtn = e.target.closest('.back-to-details-btn');
+
+    // Handle Phase Button Clicks
+    if (button) {
+        const targetContainer = button.closest('.phase-container');
+        const targetContent = targetContainer.querySelector('.phase-content');
+        button.classList.toggle('active');
+        targetContent.classList.toggle('hidden');
+    }
+
+    // Handle "Mark as Complete" Button
+    if (completeBtn) {
+        const uploadButton = completeBtn.nextElementSibling;
+        uploadButton.classList.toggle('hidden');
+        completeBtn.classList.toggle('bg-green-200');
+    }
+
+    // Handle "Upload" Button
+    if (uploadBtn) {
+        const stepContainer = uploadBtn.closest('.step-container');
+        stepContainer.classList.add('upload-view-active');
+        stepContainer.querySelector('.back-to-details-btn').classList.remove('hidden');
+        stepContainer.querySelector('.upload-btn').classList.add('hidden');
+        stepContainer.querySelector('.step-content-normal').classList.add('hidden');
+        stepContainer.querySelector('.step-content-upload').classList.remove('hidden');
+    }
+
+    // Handle "Back to Details" Button
+    if (backBtn) {
+        const stepContainer = backBtn.closest('.step-container');
+        stepContainer.classList.remove('upload-view-active');
+        stepContainer.querySelector('.back-to-details-btn').classList.add('hidden');
+        stepContainer.querySelector('.step-content-normal').classList.remove('hidden');
+        stepContainer.querySelector('.step-content-upload').classList.add('hidden');
+    }
+    
+    // Handle Dropbox Click (to open file dialog)
+    if (dropbox && !dropbox.classList.contains('has-file')) {
+        dropbox.querySelector('.file-input').click();
+    }
+    
+    // Handle Re-upload Click
+    if (reuploadLink) {
+        reuploadLink.closest('.dropbox').querySelector('.file-input').click();
+    }
+});
+
+// --- ADD THESE NEW EVENT LISTENERS right after the one above ---
+curriculumRoadmap.addEventListener('change', (e) => {
+    if (e.target.matches('.file-input')) {
+        handleFile(e.target.files[0], e.target.closest('.dropbox'));
+    }
+});
+
+curriculumRoadmap.addEventListener('dragover', (e) => {
+    const dropbox = e.target.closest('.dropbox');
+    if (dropbox) {
+        e.preventDefault();
+        dropbox.classList.add('dragover');
+    }
+});
+
+curriculumRoadmap.addEventListener('dragleave', (e) => {
+    const dropbox = e.target.closest('.dropbox');
+    if (dropbox) {
+        e.preventDefault();
+        dropbox.classList.remove('dragover');
+    }
+});
+
+curriculumRoadmap.addEventListener('drop', (e) => {
+    const dropbox = e.target.closest('.dropbox');
+    if (dropbox) {
+        e.preventDefault();
+        dropbox.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        handleFile(file, dropbox);
+    }
+});
+
+/* function handleFile(file, dropbox) {
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+        const prompt = dropbox.querySelector('.dropbox-prompt');
+        const viewLink = dropbox.querySelector('.view-link');
+        
+        prompt.innerHTML = `<i data-feather="file-text" class="w-10 h-10 mx-auto"></i><p class="mt-2 text-sm font-semibold truncate">${file.name}</p>`;
+        feather.replace();
+        
+        viewLink.href = URL.createObjectURL(file);
+        dropbox.classList.add('has-file');
+    } else {
+        alert('Invalid file type. Please upload a JPG or PNG image.');
+    }
+} */
+
+function handleFile(file, dropbox) {
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+        const prompt = dropbox.querySelector('.dropbox-prompt');
+	const viewLink = dropbox.querySelector('.view-link');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Set the background image of the dropbox
+            dropbox.style.backgroundImage = `url('${e.target.result}')`;
+            
+            viewLink.href = URL.createObjectURL(file);
+        };  
+        reader.readAsDataURL(file);
+        dropbox.classList.add('has-file');
+    } else {
+        alert('Invalid file type. Please upload a JPG or PNG image.');
+    }
+}
+
+
+    // --- Initial Page Load ---
+    if (curriculumData && curriculumData.Title) {
+        curriculumTitle.textContent = curriculumData.Title;
+        updateSliderUI(0, true);
+        renderCurriculum(pathKeys[0]);
+    } else {
+         curriculumTitle.textContent = "Could not load curriculum.";
+    }
+});
+    </script>
+
+</body>
+</html>
