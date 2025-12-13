@@ -21,7 +21,7 @@ model = genai.GenerativeModel('gemini-2.5-pro')
 
 # --- Configure Cloudinary ---
 cloudinary.config( 
-  cloud_name = "dpsximpjn", 
+  cloud_name = "YOUR_CLOUDINARY_NODE_NAME", 
   api_key = "YOUR_KEY", 
   api_secret = "YOUR_SECRET",
   secure = True
