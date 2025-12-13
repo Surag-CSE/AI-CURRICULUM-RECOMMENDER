@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.secret_key = 'your_very_long_and_random_secret_key' 
 
 # --- Configure Gemini API ---
-genai.configure(api_key="AIzaSyDhHyiURBNplE76A9K6oO3k-Wh1eAbwyGA") 
+genai.configure(api_key="YOUR_API_KEY") 
 model = genai.GenerativeModel('gemini-2.5-pro')
 
 # --- Configure Cloudinary ---
