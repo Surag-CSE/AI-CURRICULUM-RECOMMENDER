@@ -22,16 +22,16 @@ model = genai.GenerativeModel('gemini-2.5-pro')
 # --- Configure Cloudinary ---
 cloudinary.config( 
   cloud_name = "dpsximpjn", 
-  api_key = "514518292636195", 
-  api_secret = "B-JvDNXTFYnZLCyTlsZrTtXvxQE",
+  api_key = "YOUR_KEY", 
+  api_secret = "YOUR_SECRET",
   secure = True
 )
 
 # Configure MySQL
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Pokemonbw@2015'
-app.config['MYSQL_DB'] = 'SmartLearnAI_New'
+app.config['MYSQL_PASSWORD'] = 'YOUR_SQL_PASSWORD'
+app.config['MYSQL_DB'] = 'YOUR_DB_NAME'
 # Use DictCursor to get results as dictionaries, which is easier to work with
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor' 
 
